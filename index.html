@@ -107,7 +107,8 @@
         .panel { background: var(--bg-card); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
         .panel-head { font-size: 18px; color: var(--neon); margin-bottom: 20px; font-weight: 700; border-bottom: 1px solid #334155; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
         .form-control { width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #334155; background: var(--bg-alt); color: white; margin-bottom: 15px; font-size: 16px; }
-        .btn-app { width: 100%; padding: 15px; background: var(--info); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-app { width: 100%; padding: 15px; background: var(--info); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s;}
+        .btn-app:hover { opacity: 0.9; }
 
         .order-card { background: var(--bg-alt); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid; }
         .badge { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
@@ -126,10 +127,12 @@
         .modal-overlay.active { display: flex; opacity: 1; animation: fadeIn 0.3s; }
         .modal-box { background: var(--bg-card); border: 2px solid var(--neon); border-radius: 16px; padding: 30px; max-width: 500px; width: 90%; color: white; transform: translateY(-20px); transition: transform 0.3s ease; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
         .modal-overlay.active .modal-box { transform: translateY(0); }
-        .modal-box h2 { color: var(--neon); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-family: var(--font-head);}
+        .modal-box h2 { color: var(--neon); display: flex; align-items: center; gap: 10px; font-family: var(--font-head); margin: 0;}
         .modal-box p { color: var(--text-muted); font-size: 15px; margin-bottom: 25px; line-height: 1.6; }
         .btn-close-modal { background: var(--danger); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s;}
         .btn-close-modal:hover { background: #b91c1c; }
+        .btn-icon-close { background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: 0.2s;}
+        .btn-icon-close:hover { color: var(--danger); }
 
         /* MENÚ ACCESIBILIDAD */
         .a11y-btn-float { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #0f62fe; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.3s; }
@@ -198,9 +201,8 @@
         <nav class="navbar">
             <a href="#" class="logo">SISTEMA <span>TAITA</span></a>
             <div class="nav-links">
-                <a href="#" onclick="abrirModal('modal-mobile', event)"><i class="fa-solid fa-mobile-screen"></i> Mobile First</a>
-                <a href="#" onclick="abrirModal('modal-arq', event)"><i class="fa-solid fa-database"></i> Arquitectura</a>
-                <button onclick="abrirApp()" class="btn-cta"><i class="fa-solid fa-play"></i> Probar App</button>
+                <a onclick="abrirModal('modal-mobile', event)"><i class="fa-solid fa-mobile-screen"></i> Mobile First</a>
+                <a onclick="abrirModal('modal-arq', event)"><i class="fa-solid fa-database"></i> Arquitectura</a>
             </div>
         </nav>
 
@@ -270,7 +272,7 @@
 
         <div class="app-body">
             
-            <div id="vista-selector" class="app-view active">
+            <div id="vista-selector" class="app-view">
                 <div class="system-welcome"><h1>Plataforma <span>TAITA</span></h1><p>Seleccione su módulo de trabajo asignado.</p></div>
                 <div class="status-dashboard">
                     <div class="status-card"><h3>Estado Conexión</h3><div class="value green" id="ui-main-status"><i class="fa-solid fa-check-circle"></i> En Línea</div></div>
@@ -400,24 +402,31 @@
 
     <div id="modal-mobile" class="modal-overlay" onclick="cerrarModales()">
         <div class="modal-box" onclick="event.stopPropagation()">
-            <h2><i class="fa-solid fa-mobile-screen"></i> Enfoque Mobile-First</h2>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <h2 style="margin: 0;"><i class="fa-solid fa-mobile-screen"></i> Enfoque Mobile-First</h2>
+                <button onclick="cerrarModales()" class="btn-icon-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             <p>En IHC, el diseño <strong>Mobile-First</strong> garantiza que la interfaz se construya pensando primero en las pantallas pequeñas (celulares de los mozos). Hemos aplicado la <strong>Ley de Fitts</strong> diseñando botones grandes y accesibles para el uso táctil a una mano, reduciendo la carga cognitiva y los errores durante el servicio rápido en el salón.</p>
-            <button class="btn-close-modal" onclick="cerrarModales()">Entendido</button>
         </div>
     </div>
 
     <div id="modal-arq" class="modal-overlay" onclick="cerrarModales()">
         <div class="modal-box" onclick="event.stopPropagation()">
-            <h2><i class="fa-solid fa-database"></i> Arquitectura Offline-First</h2>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <h2 style="margin: 0;"><i class="fa-solid fa-database"></i> Arquitectura Offline-First</h2>
+                <button onclick="cerrarModales()" class="btn-icon-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             <p>El sistema elimina la dependencia de servidores usando <strong>Client-Side Storage (LocalStorage)</strong> y la API <strong>navigator.onLine</strong>. Esto permite que el sistema responda en <strong>0 milisegundos</strong> y siga funcionando sin internet. Cuando la conexión regresa, un <em>Background Sync</em> envía los pedidos a la caja automáticamente.</p>
-            <button class="btn-close-modal" onclick="cerrarModales()">Entendido</button>
         </div>
     </div>
 
     <div id="modal-edit-mozo" class="modal-overlay" onclick="cerrarModales()">
         <div class="modal-box" onclick="event.stopPropagation()">
-            <h2><i class="fa-solid fa-user-pen"></i> Recuperar / Editar Mozo</h2>
-            <p>Para cambiar tu nombre o tu PIN, el Administrador debe autorizar la operación ingresando sus credenciales (Contraseña de Admin).</p>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <h2 style="margin: 0;"><i class="fa-solid fa-user-pen"></i> Recuperar Mozo</h2>
+                <button onclick="cerrarModales()" class="btn-icon-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p>Para cambiar tu nombre o tu PIN, el Administrador debe autorizar la operación ingresando sus credenciales.</p>
             
             <select id="edit-mozo-id" class="form-control" onchange="cargarDatosMozoEdit()"></select>
             <input type="text" id="edit-mozo-name" class="form-control" placeholder="Nuevo Nombre Completo">
@@ -428,6 +437,7 @@
             </div>
             
             <button class="btn-app" style="background: var(--warning); color: black;" onclick="guardarEdicionMozo()">Guardar Cambios Seguros</button>
+            
             <p id="edit-mozo-error" style="color: var(--danger); display: none; margin-top: 15px;"><i class="fa-solid fa-circle-exclamation"></i> Clave de administrador incorrecta.</p>
             <p id="edit-mozo-success" style="color: var(--success); display: none; margin-top: 15px;"><i class="fa-solid fa-check"></i> Datos actualizados con éxito.</p>
         </div>
@@ -435,7 +445,10 @@
 
     <div id="modal-recover-admin" class="modal-overlay" onclick="cerrarModales()">
         <div class="modal-box" onclick="event.stopPropagation()">
-            <h2><i class="fa-solid fa-key"></i> Recuperación de Gerencia</h2>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <h2 style="margin: 0;"><i class="fa-solid fa-key"></i> Recuperación de Gerencia</h2>
+                <button onclick="cerrarModales()" class="btn-icon-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             <p>Ingrese la Clave Maestra del Sistema para autorizar el cambio de sus credenciales de administrador.</p>
             
             <input type="password" id="rec-master-key" class="form-control" placeholder="Clave Maestra (UPN2026)" style="border-color: var(--danger);">
@@ -446,6 +459,7 @@
             </div>
             
             <button class="btn-app" style="background: var(--warning); color: black;" onclick="recuperarAdmin()">Restablecer Acceso</button>
+            
             <p id="rec-admin-error" style="color: var(--danger); display: none; margin-top: 15px;"><i class="fa-solid fa-circle-exclamation"></i> Clave maestra incorrecta.</p>
             <p id="rec-admin-success" style="color: var(--success); display: none; margin-top: 15px;"><i class="fa-solid fa-check"></i> Credenciales de Gerencia actualizadas.</p>
         </div>
@@ -473,16 +487,68 @@
     <script>
         document.getElementById('ui-main-date').innerText = new Date().toLocaleDateString('es-PE', { year: 'numeric', month: 'short', day: 'numeric' });
 
-        function abrirApp() { document.getElementById('landing-container').style.display = 'none'; document.getElementById('app-container').style.display = 'flex'; window.scrollTo(0, 0); volverMenuRoles(); render(); }
-        function cerrarApp() { document.getElementById('app-container').style.display = 'none'; document.getElementById('landing-container').style.display = 'block'; window.scrollTo(0, 0); }
-        function volverMenuRoles() { document.querySelectorAll('.app-view').forEach(e => e.classList.remove('active')); document.getElementById('vista-selector').classList.add('active'); document.getElementById('btn-volver-web').style.display = 'block'; document.getElementById('btn-cambiar-rol').style.display = 'none'; document.getElementById('ui-main-queue').innerText = colaOffline.length; }
+        // --- SISTEMA DE NAVEGACIÓN SPA (HISTORY API) PARA BOTÓN ATRÁS ---
+        function mostrarVista(vistaId) {
+            cerrarModales(); // Si hay modales abiertos, los cierra
+            
+            if(vistaId === 'landing') {
+                document.getElementById('app-container').style.display = 'none';
+                document.getElementById('landing-container').style.display = 'block';
+            } else {
+                document.getElementById('landing-container').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                document.querySelectorAll('.app-view').forEach(e => e.classList.remove('active'));
+                
+                const targetEl = document.getElementById(vistaId);
+                if(targetEl) targetEl.classList.add('active');
+                else document.getElementById('vista-selector').classList.add('active');
+                
+                if(vistaId === 'vista-selector') {
+                    document.getElementById('btn-volver-web').style.display = 'block';
+                    document.getElementById('btn-cambiar-rol').style.display = 'none';
+                } else {
+                    document.getElementById('btn-volver-web').style.display = 'none';
+                    document.getElementById('btn-cambiar-rol').style.display = 'block';
+                }
+                
+                document.getElementById('ui-main-queue').innerText = colaOffline.length;
+                render();
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // Detecta cuando el usuario presiona "Atrás" o "Adelante" en su navegador
+        window.addEventListener('popstate', (e) => {
+            if(e.state && e.state.vista) {
+                mostrarVista(e.state.vista);
+            } else {
+                mostrarVista('landing');
+            }
+        });
+
+        // Configura la página inicial en el historial
+        window.addEventListener('load', () => {
+            history.replaceState({ vista: 'landing' }, '', window.location.pathname);
+            mostrarVista('landing');
+        });
+
+        // --- FUNCIONES DE BOTONES ACTUALIZADAS CON HISTORY API ---
+        function abrirApp() { 
+            history.pushState({ vista: 'vista-selector' }, '', '#plataforma');
+            mostrarVista('vista-selector');
+        }
+        function cerrarApp() { 
+            history.pushState({ vista: 'landing' }, '', '#');
+            mostrarVista('landing');
+        }
+        function volverMenuRoles() { 
+            history.pushState({ vista: 'vista-selector' }, '', '#plataforma');
+            mostrarVista('vista-selector');
+        }
         function seleccionarRol(rol) {
-            document.querySelectorAll('.app-view').forEach(e => e.classList.remove('active'));
-            if(rol === 'mozo') document.getElementById('vista-mozo-login').classList.add('active');
-            else document.getElementById(`vista-${rol}`).classList.add('active');
-            document.getElementById('btn-volver-web').style.display = 'none';
-            document.getElementById('btn-cambiar-rol').style.display = 'block';
-            render();
+            let targetId = (rol === 'mozo') ? 'vista-mozo-login' : `vista-${rol}`;
+            history.pushState({ vista: targetId }, '', `#${targetId}`);
+            mostrarVista(targetId);
         }
 
         // --- SISTEMA DINÁMICO DE MOZOS ---
@@ -501,24 +567,26 @@
             const mozo = dbMozos.find(m => m.id === idSeleccionado);
             if(mozo && mozo.pin === p) { 
                 currentMozo = mozo.nombre; document.getElementById('ui-mozo-name').innerText = mozo.nombre; 
-                document.getElementById('vista-mozo-login').classList.remove('active'); document.getElementById('vista-mozo').classList.add('active');
-                document.getElementById('log-mozo-error').style.display = 'none'; document.getElementById('log-mozo-pass').value = ''; render();
+                document.getElementById('log-mozo-error').style.display = 'none'; document.getElementById('log-mozo-pass').value = ''; 
+                
+                history.pushState({ vista: 'vista-mozo' }, '', '#salon');
+                mostrarVista('vista-mozo');
             } else { document.getElementById('log-mozo-error').style.display = 'block'; }
         }
         function cerrarSesionMozo() { currentMozo = ''; volverMenuRoles(); }
 
         // --- SISTEMA DINÁMICO DE ADMIN Y RECUPERACIÓN ---
         let adminCreds = JSON.parse(localStorage.getItem('upn_adminCreds')) || { user: 'admin', pass: 'Taita2026' };
-
-        // Mostrar un pequeño placeholder para ayudar en la demostración
         document.getElementById('log-user').placeholder = `Usuario (ej. ${adminCreds.user})`;
 
         function login() {
             const u = document.getElementById('log-user').value; const p = document.getElementById('log-pass').value;
             if(u === adminCreds.user && p === adminCreds.pass) {
-                isAdmin = true; document.getElementById('vista-admin-login').classList.remove('active');
-                document.getElementById('vista-admin-panel').classList.add('active');
-                document.getElementById('log-error').style.display = 'none'; document.getElementById('log-user').value = ''; document.getElementById('log-pass').value = ''; render();
+                isAdmin = true; 
+                document.getElementById('log-error').style.display = 'none'; document.getElementById('log-user').value = ''; document.getElementById('log-pass').value = ''; 
+                
+                history.pushState({ vista: 'vista-admin-panel' }, '', '#gerencia');
+                mostrarVista('vista-admin-panel');
             } else { document.getElementById('log-error').style.display = 'block'; }
         }
         function cerrarSesionAdmin() { isAdmin = false; volverMenuRoles(); }
@@ -528,7 +596,6 @@
             const newUser = document.getElementById('rec-new-user').value;
             const newPass = document.getElementById('rec-new-pass').value;
 
-            // UPN2026 es la Clave Maestra Inquebrantable
             if(master === 'UPN2026') {
                 if(newUser.trim() !== '' && newPass.trim() !== '') {
                     adminCreds = { user: newUser, pass: newPass };
@@ -538,7 +605,6 @@
                     document.getElementById('rec-admin-success').style.display = 'block';
                     document.getElementById('rec-master-key').value = '';
                     
-                    // Actualizar el texto de ayuda del login normal
                     document.getElementById('log-user').placeholder = `Usuario (ej. ${newUser})`;
                 }
             } else {
@@ -617,8 +683,18 @@
         // --- LÓGICA DE MENÚS Y MODALES ---
         function toggleA11yMenu() { document.getElementById('a11yPanel').classList.toggle('active'); }
         function toggleA11y(claseCSS, btnId) { document.body.classList.toggle(claseCSS); document.getElementById(btnId).classList.toggle('active-a11y'); }
-        function abrirModal(id, event) { if(event) event.preventDefault(); document.getElementById(id).classList.add('active'); }
-        function cerrarModales() { document.getElementById('modal-mobile').classList.remove('active'); document.getElementById('modal-arq').classList.remove('active'); document.getElementById('modal-edit-mozo').classList.remove('active'); document.getElementById('modal-recover-admin').classList.remove('active');}
+        
+        function abrirModal(id, event) { 
+            if(event) event.preventDefault(); 
+            document.getElementById(id).classList.add('active'); 
+        }
+        
+        function cerrarModales() { 
+            document.getElementById('modal-mobile').classList.remove('active'); 
+            document.getElementById('modal-arq').classList.remove('active'); 
+            document.getElementById('modal-edit-mozo').classList.remove('active'); 
+            document.getElementById('modal-recover-admin').classList.remove('active');
+        }
 
         monitorearRed();
     </script>

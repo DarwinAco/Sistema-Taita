@@ -168,11 +168,37 @@
                 <div style="max-width: 450px; margin: 0 auto;">
                     <div class="panel" style="border-top: 4px solid var(--neon);">
                         <div class="panel-head">Tomar Pedido <span style="font-size: 13px; color: var(--text-muted); font-weight: normal;"><i class="fa-solid fa-mobile-button"></i> Móvil</span></div>
+                        
                         <select id="app-prod" class="form-control">
-                            <option value="Cerveza Pilsen|15">Cerveza Pilsen - S/ 15.00</option>
-                            <option value="Chilcano de Pisco|20">Chilcano de Pisco - S/ 20.00</option>
-                            <option value="Ron Cartavio|25">Ron Cartavio - S/ 25.00</option>
-                            <option value="Agua Mineral|5">Agua Mineral - S/ 5.00</option>
+                            <optgroup label="🍺 Cervezas">
+                                <option value="Cerveza Pilsen (Jarra)|20">Cerveza Pilsen (Jarra) - S/ 20.00</option>
+                                <option value="Cerveza Pilsen (Botella)|15">Cerveza Pilsen (Botella) - S/ 15.00</option>
+                                <option value="Cerveza Cusqueña (Botella)|18">Cerveza Cusqueña (Botella) - S/ 18.00</option>
+                                <option value="Cerveza Corona|20">Cerveza Corona - S/ 20.00</option>
+                            </optgroup>
+                            
+                            <optgroup label="🍹 Tragos y Cocteles">
+                                <option value="Chilcano de Pisco|20">Chilcano de Pisco - S/ 20.00</option>
+                                <option value="Pisco Sour Clásico|22">Pisco Sour Clásico - S/ 22.00</option>
+                                <option value="Ron Cartavio con Coca Cola|25">Ron Cartavio con Coca Cola - S/ 25.00</option>
+                                <option value="Vodka con Naranja|25">Vodka con Naranja - S/ 25.00</option>
+                                <option value="Tequila Margarita|28">Tequila Margarita - S/ 28.00</option>
+                                <option value="Gin Tonic|26">Gin Tonic - S/ 26.00</option>
+                            </optgroup>
+
+                            <optgroup label="🍟 Piqueos y Snacks">
+                                <option value="Porción de Tequeños (10 unid)|18">Porción de Tequeños (10 unid) - S/ 18.00</option>
+                                <option value="Salchipapa Clásica|15">Salchipapa Clásica - S/ 15.00</option>
+                                <option value="Alitas BBQ (6 unid)|22">Alitas BBQ (6 unid) - S/ 22.00</option>
+                                <option value="Piqueo Mixto Taita|35">Piqueo Mixto Taita - S/ 35.00</option>
+                            </optgroup>
+
+                            <optgroup label="🥤 Bebidas sin alcohol">
+                                <option value="Inca Kola (500ml)|6">Inca Kola (500ml) - S/ 6.00</option>
+                                <option value="Coca Cola (500ml)|6">Coca Cola (500ml) - S/ 6.00</option>
+                                <option value="Red Bull|12">Red Bull - S/ 12.00</option>
+                                <option value="Agua Mineral|5">Agua Mineral - S/ 5.00</option>
+                            </optgroup>
                         </select>
                         <input type="number" id="app-cant" class="form-control" value="1" min="1">
                         <button class="btn-app" onclick="enviarPedido()"><i class="fa-solid fa-paper-plane"></i> Enviar a Caja</button>

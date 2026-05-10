@@ -117,6 +117,7 @@
         .st-preparando { border-color: var(--info); } .st-preparando .badge { background: rgba(59,130,246,0.2); color: var(--info); }
 
         .grid-2-app { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .grid-3-app { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; }
         th { color: var(--neon); background: var(--bg-alt); }
@@ -282,7 +283,7 @@
                 
                 <div class="role-selector-grid">
                     <div class="role-card" onclick="seleccionarRol('mozo')"><h2><i class="fa-solid fa-mobile-screen"></i> Módulo Mozo</h2><p>Interfaz celular Offline-First.</p></div>
-                    <div class="role-card" onclick="seleccionarRol('cajero')"><h2><i class="fa-solid fa-desktop"></i> Módulo Barra</h2><p>Dashboard de preparación en tiempo real.</p></div>
+                    <div class="role-card" onclick="seleccionarRol('cajero')"><h2><i class="fa-solid fa-desktop"></i> Módulo Barra y Caja</h2><p>Dashboard de preparación y cobranza.</p></div>
                     <div class="role-card" onclick="seleccionarRol('admin-login')"><h2><i class="fa-solid fa-chart-pie"></i> Módulo Gerencia</h2><p>Auditoría y control de recaudación.</p></div>
                 </div>
             </div>
@@ -295,7 +296,7 @@
                     <select id="log-mozo-user" class="form-control"></select>
                     <input type="password" id="log-mozo-pass" class="form-control" placeholder="PIN de acceso (ej. 1234)">
                     
-                    <button class="btn-app" style="background: var(--info); color: white;" onclick="loginMozo()">Entrar al Salón</button>
+                    <button class="btn-app" style="background: var(--info); color: white;" onclick="loginMozo()">Ingresar a la Discoteca</button>
                     <p id="log-mozo-error" style="color: var(--danger); display: none; margin-top: 15px;"><i class="fa-solid fa-circle-exclamation"></i> PIN incorrecto.</p>
                     
                     <p style="margin-top: 20px; font-size: 13px;">
@@ -339,8 +340,19 @@
                                 <option value="Agua Mineral|5">Agua Mineral - S/ 5.00</option>
                             </optgroup>
                         </select>
-                        <input type="number" id="app-cant" class="form-control" value="1" min="1">
-                        <button class="btn-app" onclick="enviarPedido()"><i class="fa-solid fa-paper-plane"></i> Enviar a Caja</button>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px; display: block;">Número de Box (Ej. Box 1)</label>
+                                <input type="text" id="app-mesa" class="form-control" placeholder="N° Box" style="margin-bottom: 0;">
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px; display: block;">Cantidad</label>
+                                <input type="number" id="app-cant" class="form-control" value="1" min="1" style="margin-bottom: 0;">
+                            </div>
+                        </div>
+
+                        <button class="btn-app" onclick="enviarPedido()"><i class="fa-solid fa-paper-plane"></i> Enviar a Barra</button>
                     </div>
                     <div class="panel">
                         <div class="panel-head">Mis Pedidos Realizados</div>
@@ -351,10 +363,20 @@
 
             <div id="vista-cajero" class="app-view">
                 <div class="panel">
-                    <div class="panel-head">Dashboard Central de Preparación</div>
-                    <div class="grid-2-app">
-                        <div><h3 style="color: var(--success); margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom:10px;"><i class="fa-solid fa-inbox"></i> Nuevos</h3><div id="ui-cajero-nuevos"></div></div>
-                        <div><h3 style="color: var(--info); margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom:10px;"><i class="fa-solid fa-blender"></i> Preparando</h3><div id="ui-cajero-prep"></div></div>
+                    <div class="panel-head">Dashboard Central (Barra y Caja)</div>
+                    <div class="grid-3-app">
+                        <div>
+                            <h3 style="color: var(--success); margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom:10px;"><i class="fa-solid fa-inbox"></i> 1. Nuevos</h3>
+                            <div id="ui-cajero-nuevos"></div>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--info); margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom:10px;"><i class="fa-solid fa-blender"></i> 2. Preparando</h3>
+                            <div id="ui-cajero-prep"></div>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--danger); margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom:10px;"><i class="fa-solid fa-hand-holding-dollar"></i> 3. Por Cobrar</h3>
+                            <div id="ui-cajero-cobrar"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -378,8 +400,8 @@
 
             <div id="vista-admin-panel" class="app-view">
                 <div class="grid-2-app" style="margin-bottom: 20px;">
-                    <div class="panel" style="text-align: center;"><p style="color: var(--text-muted); text-transform: uppercase; font-size:12px;">Recaudación</p><h2 style="font-size: 35px; color: var(--neon);" id="ui-admin-total">S/ 0.00</h2></div>
-                    <div class="panel" style="text-align: center;"><p style="color: var(--text-muted); text-transform: uppercase; font-size:12px;">Pedidos</p><h2 style="font-size: 35px; color: var(--neon);" id="ui-admin-count">0</h2></div>
+                    <div class="panel" style="text-align: center;"><p style="color: var(--text-muted); text-transform: uppercase; font-size:12px;">Recaudación (Solo Pagados)</p><h2 style="font-size: 35px; color: var(--neon);" id="ui-admin-total">S/ 0.00</h2></div>
+                    <div class="panel" style="text-align: center;"><p style="color: var(--text-muted); text-transform: uppercase; font-size:12px;">Auditoría de Pedidos</p><h2 style="font-size: 24px; color: var(--neon);" id="ui-admin-count">0</h2></div>
                 </div>
 
                 <div class="panel">
@@ -390,7 +412,7 @@
                         <h4 style="margin-bottom: 15px; font-size: 14px; color: var(--text-muted);">Agregar Nuevo Personal</h4>
                         <div class="grid-2-app" style="gap: 15px; margin-bottom: 15px;">
                             <input type="text" id="new-mozo-name" class="form-control" style="margin: 0;" placeholder="Nombre Completo del Mozo">
-                            <input type="password" id="new-mozo-pin" class="form-control" style="margin: 0;" placeholder="PIN de acceso numérico">
+                            <input type="password" id="new-mozo-pin" class="form-control" style="margin: 0;" placeholder="PIN numérico">
                         </div>
                         <button class="btn-app" style="background: var(--success); color: white;" onclick="agregarMozo()">
                             <i class="fa-solid fa-plus"></i> Registrar Mozo en el Sistema
@@ -403,7 +425,7 @@
                     
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>UUID</th><th>Mozo</th><th>Producto</th><th>Total</th><th>Estado</th></tr></thead>
+                            <thead><tr><th>UUID</th><th>Box / Mozo</th><th>Producto</th><th>Total</th><th>Pago (Clic para revertir)</th><th>Preparación</th></tr></thead>
                             <tbody id="ui-admin-tabla"></tbody>
                         </table>
                     </div>
@@ -423,8 +445,7 @@
                 <h2 style="margin: 0;"><i class="fa-solid fa-mobile-screen"></i> Enfoque Mobile-First</h2>
                 <button onclick="cerrarModales()" class="btn-icon-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p>En IHC, el diseño <strong>Mobile-First</strong> garantiza que la interfaz se construya pensando primero en las pantallas pequeñas (celulares de los mozos). Hemos aplicado la <strong>Ley de Fitts</strong> diseñando botones grandes y accesibles para el uso táctil a una mano, reduciendo la carga cognitiva y los errores durante el servicio rápido en el salón.</p>
-            <button class="btn-app" style="background: transparent; color: white; border: 1px solid #334155; margin-top: 10px;" onclick="cerrarModales()">Cerrar</button>
+            <p>En IHC, el diseño <strong>Mobile-First</strong> garantiza que la interfaz se construya pensando primero en las pantallas pequeñas (celulares de los mozos). Hemos aplicado la <strong>Ley de Fitts</strong> diseñando botones grandes y accesibles para el uso táctil a una mano, reduciendo la carga cognitiva y los errores durante el servicio rápido en la discoteca.</p>
         </div>
     </div>
 
@@ -435,7 +456,6 @@
                 <button onclick="cerrarModales()" class="btn-icon-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <p>El sistema elimina la dependencia de servidores usando <strong>Client-Side Storage (LocalStorage)</strong> y la API <strong>navigator.onLine</strong>. Esto permite que el sistema responda en <strong>0 milisegundos</strong> y siga funcionando sin internet. Cuando la conexión regresa, un <em>Background Sync</em> envía los pedidos a la caja automáticamente.</p>
-            <button class="btn-app" style="background: transparent; color: white; border: 1px solid #334155; margin-top: 10px;" onclick="cerrarModales()">Cerrar</button>
         </div>
     </div>
 
@@ -456,7 +476,6 @@
             </div>
             
             <button class="btn-app" style="background: var(--warning); color: black;" onclick="guardarEdicionMozo()">Guardar Cambios Seguros</button>
-            <button class="btn-app" style="background: transparent; color: white; border: 1px solid #334155; margin-top: 10px;" onclick="cerrarModales()">Cancelar y Regresar</button>
             
             <p id="edit-mozo-error" style="color: var(--danger); display: none; margin-top: 15px;"><i class="fa-solid fa-circle-exclamation"></i> Clave de administrador incorrecta.</p>
             <p id="edit-mozo-success" style="color: var(--success); display: none; margin-top: 15px;"><i class="fa-solid fa-check"></i> Datos actualizados con éxito.</p>
@@ -479,7 +498,6 @@
             </div>
             
             <button class="btn-app" style="background: var(--warning); color: black;" onclick="recuperarAdmin()">Restablecer Acceso</button>
-            <button class="btn-app" style="background: transparent; color: white; border: 1px solid #334155; margin-top: 10px;" onclick="cerrarModales()">Cancelar y Regresar</button>
             
             <p id="rec-admin-error" style="color: var(--danger); display: none; margin-top: 15px;"><i class="fa-solid fa-circle-exclamation"></i> Clave maestra incorrecta.</p>
             <p id="rec-admin-success" style="color: var(--success); display: none; margin-top: 15px;"><i class="fa-solid fa-check"></i> Credenciales de Gerencia actualizadas.</p>
@@ -599,23 +617,15 @@
             }
             const nuevoId = 'm' + Date.now();
             dbMozos.push({ id: nuevoId, nombre: nombre, pin: pin });
-            guardarMozos();
-            renderSelectMozos();
-            renderAdminMozos();
-            document.getElementById('new-mozo-name').value = '';
-            document.getElementById('new-mozo-pin').value = '';
+            guardarMozos(); renderSelectMozos(); renderAdminMozos();
+            document.getElementById('new-mozo-name').value = ''; document.getElementById('new-mozo-pin').value = '';
         }
 
         function eliminarMozo(id) {
-            if(dbMozos.length <= 1) {
-                alert('Debe haber al menos un mozo registrado en el sistema.');
-                return;
-            }
+            if(dbMozos.length <= 1) { alert('Debe haber al menos un mozo registrado en el sistema.'); return; }
             if(confirm('¿Estás seguro de eliminar a este empleado del sistema permanentemente?')) {
                 dbMozos = dbMozos.filter(m => m.id !== id);
-                guardarMozos();
-                renderSelectMozos();
-                renderAdminMozos();
+                guardarMozos(); renderSelectMozos(); renderAdminMozos();
             }
         }
 
@@ -662,8 +672,7 @@
                     document.getElementById('log-user').placeholder = `Usuario (ej. ${newUser})`;
                 }
             } else {
-                document.getElementById('rec-admin-error').style.display = 'block';
-                document.getElementById('rec-admin-success').style.display = 'none';
+                document.getElementById('rec-admin-error').style.display = 'block'; document.getElementById('rec-admin-success').style.display = 'none';
             }
         }
 
@@ -707,32 +716,112 @@
         }
         window.addEventListener('online', monitorearRed); window.addEventListener('offline', monitorearRed);
 
+        // --- MANEJO DE PEDIDOS Y PAGOS ---
         function enviarPedido() {
-            const val = document.getElementById('app-prod').value.split('|'); const cant = parseInt(document.getElementById('app-cant').value);
-            const p = { id: Math.random().toString(36).substr(2,6).toUpperCase(), mozo: currentMozo, nom: val[0], cant: cant, tot: parseFloat(val[1]) * cant, st: online ? 'enviado' : 'pendiente' };
+            const val = document.getElementById('app-prod').value.split('|'); 
+            const cant = parseInt(document.getElementById('app-cant').value);
+            const mesaInput = document.getElementById('app-mesa').value;
+            const mesaNum = mesaInput ? mesaInput : 'N/A'; 
+
+            const p = { 
+                id: Math.random().toString(36).substr(2,6).toUpperCase(), 
+                mozo: currentMozo, 
+                mesa: mesaNum, 
+                nom: val[0], cant: cant, tot: parseFloat(val[1]) * cant, 
+                st: online ? 'enviado' : 'pendiente',
+                pago: 'pendiente' 
+            };
             if(online) dbCentral.unshift(p); else colaOffline.unshift(p);
-            document.getElementById('app-cant').value = 1; guardarBD(); render();
+            
+            document.getElementById('app-cant').value = 1; 
+            document.getElementById('app-mesa').value = ''; 
+            guardarBD(); render();
         }
+
         function setEstado(id, est) { const p = dbCentral.find(x => x.id === id); if(p) { p.st = est; guardarBD(); render(); } }
+
+        function alternarPago(id, isCajero = false) {
+            const p = dbCentral.find(x => x.id === id);
+            if(p) {
+                // Si lo hace el cajero desde la barra y lo va a marcar como pagado, pedimos confirmación
+                if(isCajero && p.pago === 'pendiente') {
+                    if(!confirm(`💰 ¿Confirmas que recibiste el pago de S/ ${p.tot.toFixed(2)} por este Box?`)) return;
+                }
+                
+                p.pago = (p.pago === 'pagado') ? 'pendiente' : 'pagado';
+                guardarBD(); render();
+            }
+        }
 
         function render() {
             document.getElementById('ui-main-queue').innerText = colaOffline.length;
             const rm = document.getElementById('ui-mozo-lista'); rm.innerHTML = '';
             const misPedidosOffline = colaOffline.filter(p => p.mozo === currentMozo); const misPedidosCentral = dbCentral.filter(p => p.mozo === currentMozo);
-            [...misPedidosOffline, ...misPedidosCentral].forEach(p => { rm.innerHTML += `<div class="order-card st-${p.st}"><div><h4>${p.cant}x ${p.nom}</h4><p style="font-size:12px; color:var(--text-muted);">ID: ${p.id}</p></div><span class="badge">${p.st}</span></div>`; });
+            
+            [...misPedidosOffline, ...misPedidosCentral].forEach(p => { 
+                rm.innerHTML += `<div class="order-card st-${p.st}"><div><h4>${p.cant}x ${p.nom}</h4><p style="font-size:12px; color:var(--text-muted);">Box: ${p.mesa || 'N/A'} | ID: ${p.id}</p></div><span class="badge">${p.st}</span></div>`; 
+            });
 
-            const cn = document.getElementById('ui-cajero-nuevos'); cn.innerHTML = ''; const cp = document.getElementById('ui-cajero-prep'); cp.innerHTML = '';
+            const cn = document.getElementById('ui-cajero-nuevos'); cn.innerHTML = ''; 
+            const cp = document.getElementById('ui-cajero-prep'); cp.innerHTML = '';
+            const cc = document.getElementById('ui-cajero-cobrar'); cc.innerHTML = '';
+            
             dbCentral.forEach(p => {
-                if(p.st === 'enviado') cn.innerHTML += `<div class="order-card st-enviado"><div><h4>${p.cant}x ${p.nom}</h4><p style="font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-user-tie"></i> ${p.mozo}</p></div><button onclick="setEstado('${p.id}','preparando')" style="padding:10px; background:var(--info); color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-play"></i></button></div>`;
-                if(p.st === 'preparando') cp.innerHTML += `<div class="order-card st-preparando"><div><h4>${p.cant}x ${p.nom}</h4><p style="font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-user-tie"></i> ${p.mozo}</p></div><button onclick="setEstado('${p.id}','entregado')" style="padding:10px; background:purple; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-check"></i></button></div>`;
+                let mesaText = p.mesa ? p.mesa : 'N/A';
+                let btnPago = p.pago === 'pagado' 
+                    ? `<button onclick="alternarPago('${p.id}', true)" style="margin-top:8px; padding:4px 8px; font-size:11px; border:none; border-radius:4px; font-weight:bold; cursor:pointer; color:white; background:var(--success)"><i class="fa-solid fa-check"></i> Pagado</button>`
+                    : `<button onclick="alternarPago('${p.id}', true)" style="margin-top:8px; padding:4px 8px; font-size:11px; border:none; border-radius:4px; font-weight:bold; cursor:pointer; color:white; background:var(--danger)"><i class="fa-solid fa-money-bill"></i> Cobrar S/ ${p.tot}</button>`;
+
+                let infoHtml = `
+                    <div>
+                        <h4>${p.cant}x ${p.nom}</h4>
+                        <p style="font-size:12px; color:var(--text-muted);"><i class="fa-solid fa-cube" style="color:var(--warning)"></i> Box: ${mesaText} | <i class="fa-solid fa-user-tie"></i> ${p.mozo}</p>
+                        ${btnPago}
+                    </div>
+                `;
+
+                if(p.st === 'enviado') {
+                    cn.innerHTML += `<div class="order-card st-enviado">${infoHtml}<button onclick="setEstado('${p.id}','preparando')" style="padding:10px; background:var(--info); color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;" title="Preparar"><i class="fa-solid fa-fire-burner"></i></button></div>`;
+                }
+                else if(p.st === 'preparando') {
+                    cp.innerHTML += `<div class="order-card st-preparando">${infoHtml}<button onclick="setEstado('${p.id}','entregado')" style="padding:10px; background:purple; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;" title="Entregar"><i class="fa-solid fa-martini-glass-citrus"></i></button></div>`;
+                }
+                else if(p.st === 'entregado' && p.pago === 'pendiente') {
+                    cc.innerHTML += `<div class="order-card st-pendiente">${infoHtml}</div>`;
+                }
             });
 
             if(isAdmin) {
-                const ta = document.getElementById('ui-admin-tabla'); ta.innerHTML = ''; let t = 0, c = 0;
-                dbCentral.forEach(p => { t += p.tot; if(p.st === 'entregado') c++; ta.innerHTML += `<tr><td>${p.id}</td><td>${p.mozo}</td><td>${p.cant}x ${p.nom}</td><td>S/ ${p.tot.toFixed(2)}</td><td><span class="badge st-${p.st}" style="border: 1px solid">${p.st}</span></td></tr>`; });
-                document.getElementById('ui-admin-total').innerText = `S/ ${t.toFixed(2)}`; document.getElementById('ui-admin-count').innerText = c;
+                const ta = document.getElementById('ui-admin-tabla'); ta.innerHTML = ''; 
+                let t = 0, c = 0, pend = 0;
                 
-                // Actualiza la lista visual de personal (mozos) en el panel de administrador
+                dbCentral.forEach(p => { 
+                    let mesaText = p.mesa ? p.mesa : 'N/A';
+                    
+                    // BOTÓN INTERACTIVO PARA QUE EL GERENTE PUEDA REVERTIR ERRORES DEL CAJERO
+                    let pagoBadge = p.pago === 'pagado' 
+                        ? `<button onclick="alternarPago('${p.id}', false)" class="badge" style="border:none; cursor:pointer; background:rgba(16,185,129,0.2); color:var(--success)" title="Clic para revertir a Pendiente">Pagado <i class="fa-solid fa-rotate-left"></i></button>` 
+                        : `<button onclick="alternarPago('${p.id}', false)" class="badge" style="border:none; cursor:pointer; background:rgba(239,68,68,0.2); color:var(--danger)" title="Clic para marcar como Pagado">Pendiente <i class="fa-solid fa-check"></i></button>`;
+                    
+                    if(p.pago === 'pagado') {
+                        t += p.tot; 
+                        c++; 
+                    } else {
+                        pend++;
+                    }
+
+                    ta.innerHTML += `<tr>
+                        <td>${p.id}</td>
+                        <td>Box ${mesaText}<br><span style="font-size:11px; color:var(--text-muted)">${p.mozo}</span></td>
+                        <td>${p.cant}x ${p.nom}</td>
+                        <td>S/ ${p.tot.toFixed(2)}</td>
+                        <td>${pagoBadge}</td>
+                        <td><span class="badge st-${p.st}" style="border: 1px solid">${p.st}</span></td>
+                    </tr>`; 
+                });
+                
+                document.getElementById('ui-admin-total').innerText = `S/ ${t.toFixed(2)}`; 
+                document.getElementById('ui-admin-count').innerText = `${c} Pagados | ${pend} Pendientes`;
                 renderAdminMozos();
             }
         }

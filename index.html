@@ -107,6 +107,7 @@
         .panel { background: var(--bg-card); padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
         .panel-head { font-size: 18px; color: var(--neon); margin-bottom: 20px; font-weight: 700; border-bottom: 1px solid #334155; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
         .form-control { width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #334155; background: var(--bg-alt); color: white; margin-bottom: 15px; font-size: 16px; }
+        .form-control:focus { outline: none; border-color: var(--neon); }
         .btn-app { width: 100%; padding: 15px; background: var(--info); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.2s;}
         .btn-app:hover { opacity: 0.9; }
 
@@ -226,7 +227,7 @@
                     </div>
 
                     <div class="hero-buttons">
-                        <button onclick="abrirApp()" class="btn-cta" style="font-size: 18px; padding: 15px 35px;"><i class="fa-solid fa-power-off"></i> Iniciar Simulador</button>
+                        <button onclick="abrirModal('modal-login-simulador', event)" class="btn-cta" style="font-size: 18px; padding: 15px 35px;"><i class="fa-solid fa-power-off"></i> Iniciar Simulador</button>
                     </div>
                 </div>
                 
@@ -439,6 +440,25 @@
         </div>
     </div>
 
+    <div id="modal-login-simulador" class="modal-overlay" onclick="cerrarModales()">
+        <div class="modal-box" onclick="event.stopPropagation()" style="text-align: center; max-width: 400px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <h2 style="margin: 0; justify-content: center; width: 100%;"><i class="fa-solid fa-lock" style="margin-right: 10px;"></i> Acceso al Simulador</h2>
+                <button onclick="cerrarModales()" class="btn-icon-close" style="position: absolute; right: 20px; top: 20px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="margin-bottom: 25px; color: var(--text-muted); font-size: 14px;">Ingrese sus credenciales corporativas para iniciar la prueba interactiva del sistema TAITA.</p>
+            
+            <input type="text" id="simulador-user" class="form-control" placeholder="Usuario (Prueba con: admin)">
+            <input type="password" id="simulador-pass" class="form-control" placeholder="Contraseña (Prueba con: 1234)">
+            
+            <button class="btn-app" style="background: var(--neon); color: black; margin-top: 10px;" onclick="validarLoginSimulador()">Ingresar a la Plataforma</button>
+            
+            <p id="simulador-error" style="color: var(--danger); display: none; margin-top: 15px; font-size: 14px; font-weight: bold;">
+                <i class="fa-solid fa-circle-exclamation"></i> Usuario o contraseña incorrectos.
+            </p>
+        </div>
+    </div>
+
     <div id="modal-mobile" class="modal-overlay" onclick="cerrarModales()">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
@@ -572,6 +592,24 @@
             let targetId = (rol === 'mozo') ? 'vista-mozo-login' : `vista-${rol}`;
             history.pushState({ vista: targetId }, '', `#${targetId}`);
             mostrarVista(targetId);
+        }
+
+        // --- NUEVA LÓGICA DE LOGIN PARA EL SIMULADOR ---
+        function validarLoginSimulador() {
+            const user = document.getElementById('simulador-user').value.toLowerCase();
+            const pass = document.getElementById('simulador-pass').value;
+            
+            if(user === 'admin' && pass === '1234') {
+                // Si las credenciales son correctas
+                document.getElementById('simulador-error').style.display = 'none';
+                document.getElementById('simulador-user').value = ''; 
+                document.getElementById('simulador-pass').value = ''; 
+                cerrarModales(); 
+                abrirApp(); 
+            } else {
+                // Si la clave es incorrecta
+                document.getElementById('simulador-error').style.display = 'block';
+            }
         }
 
         // --- SISTEMA DINÁMICO Y GESTIÓN DE MOZOS ---
@@ -798,7 +836,6 @@
                 dbCentral.forEach(p => { 
                     let mesaText = p.mesa ? p.mesa : 'N/A';
                     
-                    // BOTÓN INTERACTIVO PARA QUE EL GERENTE PUEDA REVERTIR ERRORES DEL CAJERO
                     let pagoBadge = p.pago === 'pagado' 
                         ? `<button onclick="alternarPago('${p.id}', false)" class="badge" style="border:none; cursor:pointer; background:rgba(16,185,129,0.2); color:var(--success)" title="Clic para revertir a Pendiente">Pagado <i class="fa-solid fa-rotate-left"></i></button>` 
                         : `<button onclick="alternarPago('${p.id}', false)" class="badge" style="border:none; cursor:pointer; background:rgba(239,68,68,0.2); color:var(--danger)" title="Clic para marcar como Pagado">Pendiente <i class="fa-solid fa-check"></i></button>`;
@@ -840,6 +877,7 @@
             document.getElementById('modal-arq').classList.remove('active'); 
             document.getElementById('modal-edit-mozo').classList.remove('active'); 
             document.getElementById('modal-recover-admin').classList.remove('active');
+            document.getElementById('modal-login-simulador').classList.remove('active');
         }
 
         monitorearRed();

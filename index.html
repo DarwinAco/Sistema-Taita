@@ -6,6 +6,8 @@
     <title>TAITA | Sistema de Pedidos Offline-First</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Urbanist:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- NUEVO: Librería Chart.js para los gráficos del Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
@@ -405,6 +407,18 @@
                     <div class="panel" style="text-align: center;"><p style="color: var(--text-muted); text-transform: uppercase; font-size:12px;">Auditoría de Pedidos</p><h2 style="font-size: 24px; color: var(--neon);" id="ui-admin-count">0</h2></div>
                 </div>
 
+                <!-- NUEVOS GRÁFICOS DEL DASHBOARD -->
+                <div class="grid-2-app" style="margin-bottom: 20px;">
+                    <div class="panel">
+                        <div class="panel-head">¿Cuánto se ganó por mes?</div>
+                        <div style="height: 250px;"><canvas id="chartMensual"></canvas></div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-head">¿Qué productos se venden más?</div>
+                        <div style="height: 250px;"><canvas id="chartProductos"></canvas></div>
+                    </div>
+                </div>
+
                 <div class="panel">
                     <div class="panel-head"><i class="fa-solid fa-users"></i> Gestión de Personal (Mozos)</div>
                     <div id="ui-admin-mozos-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;"></div>
@@ -440,6 +454,7 @@
         </div>
     </div>
 
+    <!-- NUEVO MODAL: LOGIN DEL SIMULADOR CON USUARIO Y CONTRASEÑA -->
     <div id="modal-login-simulador" class="modal-overlay" onclick="cerrarModales()">
         <div class="modal-box" onclick="event.stopPropagation()" style="text-align: center; max-width: 400px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
@@ -600,14 +615,12 @@
             const pass = document.getElementById('simulador-pass').value;
             
             if(user === 'admin' && pass === '1234') {
-                // Si las credenciales son correctas
                 document.getElementById('simulador-error').style.display = 'none';
                 document.getElementById('simulador-user').value = ''; 
                 document.getElementById('simulador-pass').value = ''; 
                 cerrarModales(); 
                 abrirApp(); 
             } else {
-                // Si la clave es incorrecta
                 document.getElementById('simulador-error').style.display = 'block';
             }
         }
@@ -781,14 +794,69 @@
         function alternarPago(id, isCajero = false) {
             const p = dbCentral.find(x => x.id === id);
             if(p) {
-                // Si lo hace el cajero desde la barra y lo va a marcar como pagado, pedimos confirmación
                 if(isCajero && p.pago === 'pendiente') {
                     if(!confirm(`💰 ¿Confirmas que recibiste el pago de S/ ${p.tot.toFixed(2)} por este Box?`)) return;
                 }
-                
                 p.pago = (p.pago === 'pagado') ? 'pendiente' : 'pagado';
                 guardarBD(); render();
             }
+        }
+
+        // Variables para los gráficos
+        let chartMensual = null;
+        let chartProductos = null;
+
+        function renderGraficos(totalActual) {
+            if(chartMensual) chartMensual.destroy();
+            if(chartProductos) chartProductos.destroy();
+
+            const ctxMes = document.getElementById('chartMensual');
+            const ctxProd = document.getElementById('chartProductos');
+            if(!ctxMes || !ctxProd) return;
+
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = '#334155';
+
+            // Gráfico 1: Ingresos Históricos (Pregunta: ¿Cuánto se ganó por mes?)
+            chartMensual = new Chart(ctxMes.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun (Actual)'],
+                    datasets: [{
+                        label: 'Ingresos (S/)',
+                        data: [4200, 5100, 4800, 5900, 6200, totalActual > 0 ? totalActual : 850],
+                        backgroundColor: '#DEFF9A',
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // Gráfico 2: Productos más vendidos
+            let prodLabels = ['Pilsen', 'Chilcano', 'Piqueo Taita', 'Red Bull'];
+            let prodData = [45, 30, 15, 10];
+
+            const pagados = dbCentral.filter(p => p.pago === 'pagado');
+            if(pagados.length > 0) {
+                const conteo = {};
+                pagados.forEach(p => { conteo[p.nom] = (conteo[p.nom] || 0) + p.cant; });
+                const ordenado = Object.entries(conteo).sort((a,b) => b[1] - a[1]);
+                prodLabels = ordenado.slice(0, 4).map(item => item[0].split(' ')[0] + '...'); // Acortar nombres largos
+                prodData = ordenado.slice(0, 4).map(item => item[1]);
+            }
+
+            chartProductos = new Chart(ctxProd.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: prodLabels,
+                    datasets: [{
+                        data: prodData,
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
         }
 
         function render() {
@@ -860,6 +928,9 @@
                 document.getElementById('ui-admin-total').innerText = `S/ ${t.toFixed(2)}`; 
                 document.getElementById('ui-admin-count').innerText = `${c} Pagados | ${pend} Pendientes`;
                 renderAdminMozos();
+                
+                // Actualiza los gráficos del Dashboard de Gerencia con los montos calculados
+                renderGraficos(t);
             }
         }
 
